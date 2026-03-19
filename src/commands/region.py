@@ -1,29 +1,31 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import CallbackContext, ContextTypes, ConversationHandler
+from telegram.ext import ContextTypes
 from utils import REGIONS
+from database.users import get_user, set_region, ensure_user
 
-MENU = 0
+async def region(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = get_user(update.effective_user.id)
 
-async def region(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    keyboard = [
-        [InlineKeyboardButton("North America", callback_data="na")],
-        [InlineKeyboardButton("South America", callback_data="sa")],
-        [InlineKeyboardButton("Europe", callback_data="eu")],
-        [InlineKeyboardButton("Asia", callback_data="as")],
-        [InlineKeyboardButton("Africa", callback_data="af")],
-        [InlineKeyboardButton("Oceania", callback_data="oc")],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    await update.message.reply_text(
-        "Select your region: ", reply_markup=reply_markup
-    )
-    return MENU
+    reply_markup = None
+    if(user and user["region"]):
+        text = "You already selected a region."
+    else:
+        keyboard = [
+            [InlineKeyboardButton("North America", callback_data="region_na")],
+            [InlineKeyboardButton("South America", callback_data="region_sa")],
+            [InlineKeyboardButton("Europe", callback_data="region_eu")],
+            [InlineKeyboardButton("Asia", callback_data="region_as")],
+            [InlineKeyboardButton("Africa", callback_data="region_af")],
+            [InlineKeyboardButton("Oceania", callback_data="region_oc")],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        text = "Select your region:"
 
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    query = update.callback_query
-    user_id = update.effective_user.id
-
-    region = REGIONS.get(query.data)
-    await query.edit_message_text(text=f"You selected {region}")
-    return ConversationHandler.END
+    if(reply_markup != None):
+        if(update.message):
+            await update.message.reply_text(text, reply_markup=reply_markup)
+        else:
+            await update.callback_query.message.reply_text(text, reply_markup=reply_markup)
+    else:
+        await update.message.reply_text(text)
+        

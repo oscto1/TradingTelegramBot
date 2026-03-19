@@ -1,29 +1,25 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import ContextTypes, ConversationHandler
-from database.users import create_user, get_user
-
-STATE = 0
+from telegram.ext import ContextTypes
+from database.users import get_user, ensure_user
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.effective_user
     await update.message.reply_text(f"Hello {user.first_name}! Welcome to the Creature Bot.")
 
-    keyboard = [[InlineKeyboardButton("Play!", callback_data="start_game")]]
+    user_id = user.id
+    ensure_user(user_id)
+    db_user = get_user(user_id)
+    if(not db_user["region"]):
+        keyboard = [
+            [InlineKeyboardButton("🌍 Select Region", callback_data="start_play")]
+        ]
+    else:
+        keyboard = [
+            [InlineKeyboardButton("🎁 Daily", callback_data="daily")],
+            [InlineKeyboardButton("🧬 Creatures", callback_data="creatures")],
+            [InlineKeyboardButton("🌍 Change Region", callback_data="region_menu")],
+        ]
+
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    await update.message.reply_text("Start playing!", reply_markup=reply_markup)
-    return STATE
-
-async def startButton(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    query = update.callback_query
-    await query.answer()
-
-    user_id = update.effective_user.id
-    userexist = get_user(user_id) != None
-    print("user "+ str(user_id) + " exists: " + str(userexist))
-    if(not userexist):
-        create_user(user_id)
-        await query.edit_message_text(text=f"Your user was created!")
-    else:
-        await query.edit_message_text(text=f"Some message!")    
-    return ConversationHandler.END
+    await update.message.reply_text(f"Hello {user.first_name}!", reply_markup=reply_markup)
