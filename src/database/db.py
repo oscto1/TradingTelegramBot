@@ -14,7 +14,8 @@ def init_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         user_id INTEGER PRIMARY KEY,
-        region TEXT
+        region TEXT,
+        last_daily INTEGER
     )
     """)
 

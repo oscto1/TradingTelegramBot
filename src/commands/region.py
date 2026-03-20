@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
-from utils import REGIONS
+from utils import constants, messages
 from database.users import get_user, set_region, ensure_user
 
 async def region(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -21,11 +21,12 @@ async def region(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         text = "Select your region:"
 
-    if(reply_markup != None):
-        if(update.message):
-            await update.message.reply_text(text, reply_markup=reply_markup)
-        else:
-            await update.callback_query.message.reply_text(text, reply_markup=reply_markup)
-    else:
-        await update.message.reply_text(text)
+    await messages.send_message(update, context, text, reply_markup)
+    # if(reply_markup != None):
+    #     if(update.message):
+    #         await update.message.reply_text(text, reply_markup=reply_markup)
+    #     else:
+    #         await update.callback_query.message.reply_text(text, reply_markup=reply_markup)
+    # else:
+    #     await update.message.reply_text(text)
         

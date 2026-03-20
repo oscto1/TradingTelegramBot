@@ -30,11 +30,19 @@ def set_region(user_id, region):
     conn.commit()
     conn.close()
 
+def set_last_daily(user_id, timestamp):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE users SET last_daily = ? WHERE user_id = ?", (timestamp, user_id))
+
+    conn.commit()
+    conn.close()
+
 def ensure_user(user_id):
     user = get_user(user_id)
 
     if not user:
         create_user(user_id)
         return False  # newly created
-
     return True  # already existed

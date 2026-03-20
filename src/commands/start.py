@@ -4,7 +4,7 @@ from database.users import get_user, ensure_user
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.effective_user
-    await update.message.reply_text(f"Hello {user.first_name}! Welcome to the Creature Bot.")
+    # await update.message.reply_text(f"Hello {user.first_name}! Welcome to the Creature Bot.")
 
     user_id = user.id
     ensure_user(user_id)
@@ -15,7 +15,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         ]
     else:
         keyboard = [
-            [InlineKeyboardButton("🎁 Daily", callback_data="daily")],
+            [InlineKeyboardButton("🎁 Claim Daily", callback_data="daily")],
             [InlineKeyboardButton("🧬 Creatures", callback_data="creatures")],
             [InlineKeyboardButton("🌍 Change Region", callback_data="region_menu")],
         ]

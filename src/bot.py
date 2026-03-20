@@ -1,8 +1,9 @@
 import logging
-from telegram.ext import Application, CallbackQueryHandler, CommandHandler, ConversationHandler, MessageHandler, filters
+from telegram.ext import Application, CallbackQueryHandler, CommandHandler
 from config import BOT_TOKEN
 from commands.start import start
 from commands.region import region
+from commands.daily import daily
 from database.db import init_db
 from handlers.buttons import handle_buttons
 
@@ -17,6 +18,7 @@ def main():
     # commands
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("region", region))
+    app.add_handler(CommandHandler("daily", daily))
 
     # buttons
     app.add_handler(CallbackQueryHandler(handle_buttons))
